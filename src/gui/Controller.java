@@ -166,16 +166,16 @@ public class Controller { //add profile picture
 	private void newClient(Socket s) throws IOException { //Dr. Ferrer sockDemo
 		new Thread(() -> {
 			try {
-				while (true) {
-					BufferedReader responses =
-		            		new BufferedReader(new InputStreamReader(s.getInputStream()));
-		            StringBuilder sb = new StringBuilder();
-		            while (!responses.ready()){}
-		            while (responses.ready()) {
-		                sb.append(responses.readLine() + '\n');
-		            }
-		            dealWithInput(sb.toString());
-				}
+				BufferedReader responses =
+	            		new BufferedReader(new InputStreamReader(s.getInputStream()));
+	            StringBuilder sb = new StringBuilder();
+	            while (!responses.ready()){}
+	            while (responses.ready()) {
+	                sb.append(responses.readLine() + '\n');
+	            }
+	            dealWithInput(sb.toString());
+	            s.close();
+
 			} catch (Exception e) {
 				Platform.runLater(() -> badNews(e.getMessage()));
 				e.printStackTrace();
@@ -187,6 +187,7 @@ public class Controller { //add profile picture
 		new Thread(() -> {
 			try {
 				Socket target = new Socket(host, portNum);
+				System.out.println("new socket");
 				send(target, message);
 				target.close();
 			} catch (Exception e) {
