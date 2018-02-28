@@ -12,6 +12,7 @@
       <content>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0" />
                   <Label layoutX="14.0" prefHeight="87.0" prefWidth="271.0" text="My Profile">
                      <font>
                         <Font size="57.0" />
@@ -20,6 +21,9 @@
                   <TextArea fx:id="bio" layoutX="14.0" layoutY="127.0" prefHeight="161.0" prefWidth="553.0" promptText="Your bio here" />
                   <Button fx:id="edit" layoutX="14.0" layoutY="288.0" mnemonicParsing="false" onAction="#pressEdit" text="Edit" />
                   <TextField fx:id="name" layoutX="14.0" layoutY="84.0" prefHeight="43.0" prefWidth="303.0" promptText="Your name here" />
+                  <TextArea fx:id="localIp" layoutX="317.0" layoutY="84.0" prefHeight="43.0" prefWidth="251.0" promptText="Your IP" />
+                  <Label layoutX="182.0" layoutY="288.0" prefHeight="32.0" prefWidth="135.0" text="Relationship Status:" />
+                  <ChoiceBox fx:id="status" layoutX="317.0" layoutY="289.0" prefHeight="31.0" prefWidth="250.0" />
                </children></AnchorPane>
       </content>
     </Tab>
@@ -45,7 +49,7 @@
                   </Label>
                   <Button fx:id="getConnections" layoutX="362.0" layoutY="111.0" mnemonicParsing="false" onAction="#pressGetConnections" text="Get Connections" />
                   <TextField fx:id="IPaddress" layoutX="361.0" layoutY="165.0" prefHeight="31.0" prefWidth="149.0" promptText="Enter an IP address:" />
-                  <Button fx:id="go" layoutX="362.0" layoutY="196.0" mnemonicParsing="false" text="Go" />
+                  <Button fx:id="go" layoutX="362.0" layoutY="196.0" mnemonicParsing="false" onAction="#sendKnownUsers" text="Go" />
                </children>
             </AnchorPane>
          </content>
