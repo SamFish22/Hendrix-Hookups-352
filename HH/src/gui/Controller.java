@@ -7,9 +7,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import java.net.UnknownHostException;
 
 import functionality.People;
 import functionality.Profile;
@@ -43,7 +44,7 @@ public class Controller { //add profile picture
 	ListView<String> chatMessages, peopleConnected; //change peopleConnected
 
 	@FXML
-	TextArea bio, localIp;
+	TextArea bio, localIp; //inetaddress.getlocalhost.get
 
 	@FXML
 	TabPane holder;
@@ -72,7 +73,12 @@ public class Controller { //add profile picture
 		localUser = new Profile();
 		knownUsers = new People();
 		chatroom.setDisable(true);
-		
+/*		try {
+			localIp.setText(InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}*/
 		if (isFirstTime()) {
 			profileView.setDisable(true);
 			edit.setText("Done");
@@ -101,9 +107,7 @@ public class Controller { //add profile picture
 
 			badNews(e.getMessage());
 			e.printStackTrace();
-		}
-		
-		updateProfileView(localUser);
+		}		
 	}
 
 	private boolean isFirstTime() {
@@ -213,7 +217,7 @@ public class Controller { //add profile picture
 				for (String s1 : knownUsers.getKeys()) {
 					sendTo(s1, new People(temp.getProfile(s1)).toString()); //needs reconstructed people implemented
 					newUsers.addUser(temp.getProfile(s1));
-					updateProfileView(temp.getProfile(s1));
+					updateProfileView(temp.getProfile(s1)); 
 				}
 			}
 		}
@@ -223,11 +227,13 @@ public class Controller { //add profile picture
 	}
 
 	private void updateProfileView(Profile match) {
-		System.out.println("Name: " + match.getName());
-		TitledPane pane = new TitledPane();
-		pane.setText(match.getName());
-		pane.setContent(new TextField(match.getBio()));
-		profilesFound.getPanes().add(pane);
+		Platform.runLater(() -> {
+			TitledPane pane = new TitledPane();
+			pane.setText(match.getName());
+			pane.setContent(new TextField(match.getBio()));
+			profilesFound.getPanes().add(pane);
+		});
+		
 	}
 
 	private void listen() throws IOException {
