@@ -86,7 +86,6 @@ public class Profile {
 		// TODO figure out how to save image
 		FileWriter writer = null;
 		try {
-			System.out.println(file.getAbsolutePath());
 			writer = new FileWriter(file.getAbsolutePath());
 		} catch (IOException e) {
 			e.printStackTrace();

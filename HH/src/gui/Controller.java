@@ -71,10 +71,10 @@ public class Controller { //add profile picture
 		file = new File(userHomeFolder, "HendrixHookups.txt");
 		localUser = new Profile();
 		knownUsers = new People();
-
+		chatroom.setDisable(true);
+		
 		if (isFirstTime()) {
 			profileView.setDisable(true);
-			chatroom.setDisable(true);
 			edit.setText("Done");
 		} else {
 			loadFile(file);
@@ -102,6 +102,8 @@ public class Controller { //add profile picture
 			badNews(e.getMessage());
 			e.printStackTrace();
 		}
+		
+		updateProfileView(localUser);
 	}
 
 	private boolean isFirstTime() {
@@ -203,10 +205,10 @@ public class Controller { //add profile picture
 	}
 
 	private void dealWithInput(String info) {
-		System.out.println("dealWithInput " + info);
 		People newUsers = new People();
 		People temp = new People(info); //needs reconstructed people implemented
 		for (String s : temp.getKeys()) {
+			updateProfileView(temp.getProfile(s));
 			if (!knownUsers.getKeys().contains(s)) {
 				for (String s1 : knownUsers.getKeys()) {
 					sendTo(s1, new People(temp.getProfile(s1)).toString()); //needs reconstructed people implemented
@@ -221,9 +223,11 @@ public class Controller { //add profile picture
 	}
 
 	private void updateProfileView(Profile match) {
+		System.out.println("Name: " + match.getName());
 		TitledPane pane = new TitledPane();
 		pane.setText(match.getName());
 		pane.setContent(new TextField(match.getBio()));
+		profilesFound.getPanes().add(pane);
 	}
 
 	private void listen() throws IOException {
@@ -231,6 +235,7 @@ public class Controller { //add profile picture
 			try {
 				while (true) {
 					Socket s = accepter.accept();
+					System.out.println("New Client!");
 					newClient(s);
 				}
 			} catch (Exception e) {
