@@ -19,7 +19,9 @@ public class People {
 		knownUsers = new HashMap<String, String>();
 		String[] profiles = str.split("Profile:");
 		for (String each : profiles) {
-			addUser(new Profile(each));
+			if (!each.isEmpty()) {
+				addUser(new Profile(each));
+			}
 		}
 
 	}

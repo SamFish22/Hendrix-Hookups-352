@@ -17,6 +17,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -25,6 +26,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 
 public class Controller { //add profile picture
@@ -48,6 +50,9 @@ public class Controller { //add profile picture
 	
 	@FXML
 	ChoiceBox<String> status;
+	
+	@FXML
+	Accordion profilesFound;
 
 	ObservableList<String> textChat = FXCollections.observableArrayList();
 
@@ -64,7 +69,9 @@ public class Controller { //add profile picture
 	public void initialize() {
 		String userHomeFolder = System.getProperty("user.home");
 		file = new File(userHomeFolder, "HendrixHookups.txt");
-		
+		localUser = new Profile();
+		knownUsers = new People();
+
 		if (isFirstTime()) {
 			profileView.setDisable(true);
 			chatroom.setDisable(true);
@@ -72,6 +79,8 @@ public class Controller { //add profile picture
 		} else {
 			loadFile(file);
 			disableFirstPage();
+			setLocalUser();
+			knownUsers.addUser(localUser);
 		}
 		ObservableList<String> options = 
 			    FXCollections.observableArrayList("Single", "In a relationship", "It's complicated", 
@@ -82,8 +91,7 @@ public class Controller { //add profile picture
 		go.setVisible(false);
 
 		portNum = 8888;
-		knownUsers = new People();
-		localUser = new Profile();
+		
 
 		try {
 			accepter = new ServerSocket(portNum);
@@ -94,7 +102,6 @@ public class Controller { //add profile picture
 			badNews(e.getMessage());
 			e.printStackTrace();
 		}
-		knownUsers.addUser(localUser);
 	}
 
 	private boolean isFirstTime() {
@@ -112,7 +119,6 @@ public class Controller { //add profile picture
 					name.setText(bufferedReader.readLine());
 					localIp.setText(bufferedReader.readLine());
 					int i = parseStatus(bufferedReader.readLine());
-					System.out.println(i);
 					status.getSelectionModel().selectFirst();;
 					bio.setText(bufferedReader.readLine());
 					bufferedReader.close();
@@ -142,12 +148,7 @@ public class Controller { //add profile picture
 	public void pressEdit() {
 		if (edit.getText() == "Done") {
 			edit.setText("Edit");
-			localUser.setBio(bio.getText());
-			localUser.setIp(localIp.getText());
-			//localUser.setList(list);
-			localUser.setName(name.getText());
-			localUser.setStat(status.getValue());
-			localUser.saveProfile(file);
+			setLocalUser();
 			disableFirstPage();
 			knownUsers.addUser(localUser);
 			
@@ -159,6 +160,15 @@ public class Controller { //add profile picture
 			localIp.setEditable(true);
 			status.setDisable(false);
 		}
+	}
+	
+	public void setLocalUser() {
+		localUser.setBio(bio.getText());
+		localUser.setIp(localIp.getText());
+		//localUser.setList(list);
+		localUser.setName(name.getText());
+		localUser.setStat("Single");	//fix
+		localUser.saveProfile(file);
 	}
 	
 	public void disableFirstPage() {
@@ -201,12 +211,19 @@ public class Controller { //add profile picture
 				for (String s1 : knownUsers.getKeys()) {
 					sendTo(s1, new People(temp.getProfile(s1)).toString()); //needs reconstructed people implemented
 					newUsers.addUser(temp.getProfile(s1));
+					updateProfileView(temp.getProfile(s1));
 				}
 			}
 		}
 		for (String s2 : newUsers.getKeys()) {
 			knownUsers.addUser(newUsers.getProfile(s2));
 		}
+	}
+
+	private void updateProfileView(Profile match) {
+		TitledPane pane = new TitledPane();
+		pane.setText(match.getName());
+		pane.setContent(new TextField(match.getBio()));
 	}
 
 	private void listen() throws IOException {
@@ -233,7 +250,6 @@ public class Controller { //add profile picture
 	            while (responses.ready()) {
 	                sb.append(responses.readLine() + '\n');
 	            }
-	            System.out.println(sb.toString());
 	            dealWithInput(sb.toString());
 	            s.close();
 
@@ -244,6 +260,10 @@ public class Controller { //add profile picture
 		}).start();
 	}
 
+	public void sendKnownUsers() {
+		sendTo(IPaddress.getText(), knownUsers.toString());
+	}
+	
 	private void sendTo(String host, String message) { //Dr. Ferrer sockDemo
 		new Thread(() -> {
 			try {
@@ -263,7 +283,5 @@ public class Controller { //add profile picture
 		sockout.flush();
 	}
 
-	public void sendKnownUsers() {
-		sendTo(IPaddress.getText(), knownUsers.toString());
-	}
+	
 }

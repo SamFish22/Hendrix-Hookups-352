@@ -36,16 +36,16 @@ public class Profile {
 	}
 
 	public Profile(String profile) {
-		System.out.print(profile);
 		String count;
 		ArrayList<String> stats;
 		int indexer;
 		count = "";
 		stats = new ArrayList<String>();
 		for (int i = 0; i < profile.length(); i++) {
-			if (profile.charAt(i) == ' ') {
+			if (profile.charAt(i) != ' ') {
 				count = count + profile.charAt(i);
 			} else {
+				
 				indexer = Integer.parseInt(count);
 				count = "";
 				stats.add(profile.substring(i + 1, i + 1 + indexer));

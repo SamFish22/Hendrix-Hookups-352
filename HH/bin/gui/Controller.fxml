@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.media.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
@@ -31,7 +33,6 @@
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <ListView layoutX="14.0" layoutY="53.0" prefHeight="255.0" prefWidth="321.0" />
                   <Label layoutX="14.0" layoutY="3.0" prefHeight="60.0" prefWidth="182.0" text="Who's Connected?">
                      <font>
                         <Font size="21.0" />
@@ -50,6 +51,11 @@
                   <Button fx:id="getConnections" layoutX="362.0" layoutY="111.0" mnemonicParsing="false" onAction="#pressGetConnections" text="Get Connections" />
                   <TextField fx:id="IPaddress" layoutX="361.0" layoutY="165.0" prefHeight="31.0" prefWidth="149.0" promptText="Enter an IP address:" />
                   <Button fx:id="go" layoutX="362.0" layoutY="196.0" mnemonicParsing="false" onAction="#sendKnownUsers" text="Go" />
+                  <Accordion fx:id="profilesFound" layoutX="13.0" layoutY="46.0" prefHeight="262.0" prefWidth="321.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Accordion>
                </children>
             </AnchorPane>
          </content>
