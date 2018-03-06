@@ -47,7 +47,6 @@ public class People {
 	}
 
 	public Profile getProfile(String key) { // needs profile reconstruction from string implemented
-		System.out.println(knownUsers.get(key) + " in people");
 		return new Profile(knownUsers.get(key));
 	}
 

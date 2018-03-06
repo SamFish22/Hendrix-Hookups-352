@@ -142,12 +142,7 @@ public class Profile {
 
 	@Override
 	public boolean equals(Object p) {
-		if (p instanceof Profile) {
-			if (getIp().equals(((Profile) p).getIp())) {
-				return true;
-			}
-		}
-		return false;
+		return toString().equals(p.toString());
 	}
 
 	@Override

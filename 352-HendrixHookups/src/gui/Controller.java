@@ -261,13 +261,11 @@ public class Controller { //add profile picture
 		}
 		System.out.println("updateallpeople knownUsers " + knownUsers.toString());*/
 
-		People temp = new People(info);
-		for (String s : temp.getKeys()) {
-			if (!s.equals(localUser.getIp())) {
-				knownUsers.addUser(temp.getProfile(s));
-				updateProfileView(temp.getProfile(s));
-			}
-		}
+		People temp;
+
+		updateSelf(info);
+
+		temp = new People(info);
 		for (String s1 : knownUsers.getKeys()) {
 			if (!s1.equals(localUser.getIp())) {
 				sendTo(s1, knownUsers.toString(), InfoType.UPDATE.ordinal());
