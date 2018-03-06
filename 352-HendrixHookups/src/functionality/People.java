@@ -39,6 +39,7 @@ public class People {
 	}
 
 	public Profile getProfile(String key) { // needs profile reconstruction from string implemented
+		System.out.println(knownUsers.get(key) + " in people");
 		return new Profile(knownUsers.get(key));
 	}
 
@@ -56,9 +57,9 @@ public class People {
 	public String toString() {
 		/*
 		 * String people; String temp;
-		 * 
+		 *
 		 * people = "";
-		 * 
+		 *
 		 * for (String s : knownUsers.keySet()) { temp = knownUsers.get(s) + " "; people
 		 * = people + temp.length() + " " + temp; }
 		 */

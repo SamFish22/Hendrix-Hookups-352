@@ -45,13 +45,13 @@ public class Profile {
 			if (profile.charAt(i) != ' ') {
 				count = count + profile.charAt(i);
 			} else {
-				
 				indexer = Integer.parseInt(count);
 				count = "";
 				stats.add(profile.substring(i + 1, i + 1 + indexer));
 				i = i + indexer;
 			}
 		}
+		//System.out.println(stats.toString());
 		this.name = stats.get(0);
 		this.ip = stats.get(1);
 		this.stat = stats.get(2);

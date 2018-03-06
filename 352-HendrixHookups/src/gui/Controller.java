@@ -74,12 +74,12 @@ public class Controller { //add profile picture
 		localUser = new Profile();
 		knownUsers = new People();
 		chatroom.setDisable(true);
-/*		try {
+		try {
 			localIp.setText(InetAddress.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}*/
+		}
 		if (isFirstTime()) {
 			profileView.setDisable(true);
 			edit.setText("Done");
@@ -122,7 +122,7 @@ public class Controller { //add profile picture
 				String line = bufferedReader.readLine();
 				if (line.equals("Hendrix-Hookups File")) {
 					name.setText(bufferedReader.readLine());
-					localIp.setText(bufferedReader.readLine());
+					bufferedReader.readLine();
 					int i = parseStatus(bufferedReader.readLine());
 					status.getSelectionModel().selectFirst();;
 					bio.setText(bufferedReader.readLine());
@@ -279,6 +279,7 @@ public class Controller { //add profile picture
 	            while (responses.ready()) {
 	                sb.append(responses.readLine() + '\n');
 	            }
+	            System.out.println(sb.toString() + " Please in controller");
 	            dealWithInput(sb.toString());
 	            s.close();
 
