@@ -1,8 +1,6 @@
 package functionality;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 public class People {
@@ -19,9 +17,11 @@ public class People {
 
 	public People(String str) {
 		knownUsers = new HashMap<String, String>();
-		String[] profiles = str.split("Profile:");;
+		String[] profiles = str.split("Profile:");
 		for (String each : profiles) {
-			addUser(new Profile(each));
+			if (!each.isEmpty()) {
+				addUser(new Profile(each));
+			}
 		}
 
 	}
@@ -38,13 +38,14 @@ public class People {
 		return knownUsers.get(key);
 	}
 
-	public Profile getProfile(String key) {      // needs profile reconstruction from string implemented
+	public Profile getProfile(String key) { // needs profile reconstruction from string implemented
 		return new Profile(knownUsers.get(key));
 	}
 
 	public People reconstruct(String str) {
 		People list = new People();
-		String[] profiles = str.split("Profile:");;
+		String[] profiles = str.split("Profile:");
+		;
 		for (String each : profiles) {
 			list.addUser(new Profile(each));
 		}
@@ -53,15 +54,14 @@ public class People {
 
 	@Override
 	public String toString() {
-		/*String people;
-		String temp;
-
-		people = "";
-
-		for (String s : knownUsers.keySet()) {
-			temp = knownUsers.get(s) + " ";
-			people = people + temp.length() + " " + temp;
-		}*/
+		/*
+		 * String people; String temp;
+		 * 
+		 * people = "";
+		 * 
+		 * for (String s : knownUsers.keySet()) { temp = knownUsers.get(s) + " "; people
+		 * = people + temp.length() + " " + temp; }
+		 */
 
 		String temp;
 		temp = "";

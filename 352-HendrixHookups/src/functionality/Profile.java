@@ -7,10 +7,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -22,9 +24,7 @@ public class Profile {
 	private String stat;
 	private String bio;
 	private Image pic;
-	private File file;
 	private File imageFile;
-	private String line;
 
 	public Profile() {
 		name = "";
@@ -32,22 +32,30 @@ public class Profile {
 		stat = "";
 		bio = "";
 		pic = null;
-		file = null;
 		imageFile = null;
-		line = "";
 	}
 
 	public Profile(String profile) {
-		int end=0;
-		while(!(profile.substring(0, end).contains(" "))) {
-			end++;
+		String count;
+		ArrayList<String> stats;
+		int indexer;
+		count = "";
+		stats = new ArrayList<String>();
+		for (int i = 0; i < profile.length(); i++) {
+			if (profile.charAt(i) != ' ') {
+				count = count + profile.charAt(i);
+			} else {
+				
+				indexer = Integer.parseInt(count);
+				count = "";
+				stats.add(profile.substring(i + 1, i + 1 + indexer));
+				i = i + indexer;
+			}
 		}
-		List<String> info = Arrays.asList(profile.split(","));
-		this.name = info.get(0);
-		this.ip = info.get(1);
-		this.stat = info.get(2);
-		this.bio = info.get(3);
-
+		this.name = stats.get(0);
+		this.ip = stats.get(1);
+		this.stat = stats.get(2);
+		this.bio = stats.get(3);
 	}
 
 	public Profile(String user_name, String ip_address, String status, String biography, Image picture) {
@@ -66,8 +74,7 @@ public class Profile {
 		pic = p;
 	}
 
-	public void createProfile() {
-		file = new File(System.getProperty("user.dir")+"\\"+name+".txt");
+	public void createProfile(File file) {
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
@@ -75,16 +82,14 @@ public class Profile {
 		}
 	}
 
-	public void saveProfile() {
-		//TODO figure out how to save image
+	public void saveProfile(File file) {
+		// TODO figure out how to save image
 		FileWriter writer = null;
 		try {
-			System.out.println(file.getAbsolutePath());
 			writer = new FileWriter(file.getAbsolutePath());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("made it");
 		PrintWriter print = new PrintWriter(writer);
 		print.println("Hendrix-Hookups File");
 		print.println(name);
@@ -92,29 +97,6 @@ public class Profile {
 		print.println(stat);
 		print.println(bio);
 		print.close();
-	}
-
-	public void loadFile(TextArea bio, TextField name, TextField status, File file) {
-		try {
-			FileReader fileReader = new FileReader(file.getAbsolutePath());
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
-			try {
-				line = bufferedReader.readLine();
-				if (line.equals("Hendrix-Hookups File")) {
-					name.setText(bufferedReader.readLine());
-					bufferedReader.readLine();
-					status.setText(bufferedReader.readLine());
-					bio.setText(bufferedReader.readLine());
-					//TODO open image
-				} else {
-					//TODO
-				}
-			} catch (IOException e) {
-				//TODO
-			}
-		} catch (FileNotFoundException e) {
-			//TODO
-		}
 	}
 
 	public String getIp() {
@@ -155,13 +137,14 @@ public class Profile {
 
 	@Override
 	public String toString() {
-		return getName()+","+getIp()+","+getStat()+","+getBio();
+		return name.length() + " " + name + ip.length() + " " + ip + stat.length() + " " + stat + bio.length() + " "
+				+ bio;
 	}
 
 	@Override
 	public boolean equals(Object p) {
-		if(p instanceof Profile) {
-			if(getIp().equals(((Profile) p).getIp())) {
+		if (p instanceof Profile) {
+			if (getIp().equals(((Profile) p).getIp())) {
 				return true;
 			}
 		}
@@ -173,13 +156,26 @@ public class Profile {
 		return toString().hashCode();
 	}
 
-	public Profile reconstruct(String profile) {
-		int end=0;
-		while(!(profile.substring(0, end).contains(" "))) {
-			end++;
+	public static Profile reconstruct(String profile) {
+		String count;
+		ArrayList<String> stats;
+		int indexer;
+		count = "";
+		stats = new ArrayList<String>();
+		for (int i = 0; i < profile.length(); i++) {
+			if (profile.charAt(i) == ' ') {
+				count = count + profile.charAt(i);
+			} else {
+				indexer = Integer.parseInt(count);
+				count = "";
+				stats.add(profile.substring(i + 1, i + 1 + indexer));
+				i = i + indexer;
+			}
 		}
-		List<String> info = Arrays.asList(profile.split(","));
-		Profile p = new Profile(info.get(0),info.get(1),info.get(2),info.get(3),null);
+		Profile p = new Profile(stats.get(0), stats.get(1), stats.get(2), stats.get(3), null);
+
 		return p;
+
 	}
+
 }
