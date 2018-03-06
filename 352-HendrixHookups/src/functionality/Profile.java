@@ -51,7 +51,6 @@ public class Profile {
 				i = i + indexer;
 			}
 		}
-		//System.out.println(stats.toString());
 		this.name = stats.get(0);
 		this.ip = stats.get(1);
 		this.stat = stats.get(2);

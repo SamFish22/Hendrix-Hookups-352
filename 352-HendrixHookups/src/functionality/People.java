@@ -5,22 +5,30 @@ import java.util.Set;
 
 public class People {
 	HashMap<String, String> knownUsers;
+	String firstIP;
 
 	public People() {
 		knownUsers = new HashMap<String, String>();
+		firstIP = null;
 	}
 
 	public People(Profile p) {
 		knownUsers = new HashMap<String, String>();
 		addUser(p);
+		firstIP = p.getIp();
 	}
 
 	public People(String str) {
+		boolean first = true;
 		knownUsers = new HashMap<String, String>();
 		String[] profiles = str.split("Profile:");
 		for (String each : profiles) {
 			if (!each.isEmpty()) {
 				addUser(new Profile(each));
+				if (first) {
+					firstIP = new Profile(each).getIp();
+					first = false;
+				}
 			}
 		}
 
@@ -51,6 +59,10 @@ public class People {
 			list.addUser(new Profile(each));
 		}
 		return list;
+	}
+
+	public String getFirstIP() {
+		return firstIP;
 	}
 
 	@Override

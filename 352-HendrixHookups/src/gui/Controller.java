@@ -207,11 +207,13 @@ public class Controller { //add profile picture
 	}
 
 	private void dealWithInput(String info) {
+		System.out.println("deal with input: " + info);
 		String temp;
 		int ord;
 
 		temp = info.substring(1);
 		ord = Integer.parseInt(info.charAt(0) + "");
+		System.out.println("deal with input temp" + temp);
 
 		if (ord == InfoType.PEOPLE.ordinal()) {
 			updateAllPeople(temp);
@@ -227,21 +229,30 @@ public class Controller { //add profile picture
 	}
 
 	private void updateAllPeople(String info) {
+		System.out.println("update all people " + info);
 		People newUsers = new People();
 		People temp = new People(info);
 		for (String s : temp.getKeys()) {
-			updateProfileView(temp.getProfile(s));
+			//updateProfileView(temp.getProfile(s));
 			if (!knownUsers.getKeys().contains(s) || !knownUsers.getProfile(s).equals(temp.getProfile(s))) {
+				//sendTo(s, new People(temp.getProfile(s)).toString(), InfoType.PEOPLE.ordinal());
+				newUsers.addUser(temp.getProfile(s));
 				for (String s1 : knownUsers.getKeys()) {
-					sendTo(s1, new People(temp.getProfile(s1)).toString(), InfoType.PEOPLE.ordinal());
-					newUsers.addUser(temp.getProfile(s1));
-					updateProfileView(temp.getProfile(s1));
+					sendTo(s1, new People(temp.getProfile(s)).toString(), InfoType.PEOPLE.ordinal());
+					newUsers.addUser(temp.getProfile(s));
 				}
+			}
+		}
+		for (String s1 : knownUsers.getKeys()) {
+			if (!temp.getKeys().contains(s1)) {
+				sendTo(temp.getFirstIP(), new People(knownUsers.getProfile(s1)).toString(), InfoType.PEOPLE.ordinal());
 			}
 		}
 		for (String s2 : newUsers.getKeys()) {
 			knownUsers.addUser(newUsers.getProfile(s2));
+			updateProfileView(newUsers.getProfile(s2));
 		}
+		System.out.println("updateallpeople knownUsers " + knownUsers.toString());
 	}
 
 	private void updateProfileView(Profile match) {
@@ -277,10 +288,12 @@ public class Controller { //add profile picture
 	            StringBuilder sb = new StringBuilder();
 	            while (!responses.ready()){}
 	            while (responses.ready()) {
-	                sb.append(responses.readLine() + '\n');
+	                sb.append(responses.readLine());
 	            }
-	            System.out.println(sb.toString() + " Please in controller");
-	            dealWithInput(sb.toString());
+	            System.out.println("double check");
+	            System.out.println("check " + sb.toString() + " Please in controller");
+	            //String string = sb.toString();
+	            dealWithInput(sb.toString().toString());
 	            s.close();
 
 			} catch (Exception e) {
