@@ -217,6 +217,8 @@ public class Controller { //add profile picture
 
 		if (ord == InfoType.PEOPLE.ordinal()) {
 			updateAllPeople(temp);
+		} else if (ord == InfoType.UPDATE.ordinal()) {
+			updateSelf(temp);
 		} else if (ord == InfoType.REQUEST.ordinal()) {
 			//todo
 		} else if (ord == InfoType.ACCEPT.ordinal()) {
@@ -229,7 +231,7 @@ public class Controller { //add profile picture
 	}
 
 	private void updateAllPeople(String info) {
-		System.out.println("update all people " + info);
+		/*System.out.println("update all people " + info);
 		People newUsers = new People();
 		People temp = new People(info);
 		for (String s : temp.getKeys()) {
@@ -243,16 +245,44 @@ public class Controller { //add profile picture
 				}
 			}
 		}
+
+		People needToSend = new People();
 		for (String s1 : knownUsers.getKeys()) {
 			if (!temp.getKeys().contains(s1)) {
-				sendTo(temp.getFirstIP(), new People(knownUsers.getProfile(s1)).toString(), InfoType.PEOPLE.ordinal());
+				needToSend.addUser(knownUsers.getProfile(s1));
+				knownUsers.addUser(knownUsers.getProfile(s1));
 			}
 		}
+		sendTo(temp.getFirstIP(), needToSend.toString(), InfoType.PEOPLE.ordinal());
+
 		for (String s2 : newUsers.getKeys()) {
 			knownUsers.addUser(newUsers.getProfile(s2));
 			updateProfileView(newUsers.getProfile(s2));
 		}
-		System.out.println("updateallpeople knownUsers " + knownUsers.toString());
+		System.out.println("updateallpeople knownUsers " + knownUsers.toString());*/
+
+		People temp = new People(info);
+		for (String s : temp.getKeys()) {
+			if (!s.equals(localUser.getIp())) {
+				knownUsers.addUser(temp.getProfile(s));
+				updateProfileView(temp.getProfile(s));
+			}
+		}
+		for (String s1 : knownUsers.getKeys()) {
+			if (!s1.equals(localUser.getIp())) {
+				sendTo(s1, knownUsers.toString(), InfoType.UPDATE.ordinal());
+			}
+		}
+	}
+
+	private void updateSelf(String info) {
+		People temp = new People(info);
+		for (String s : temp.getKeys()) {
+			if (!knownUsers.getKeys().contains(s) || !knownUsers.getProfile(s).equals(temp.getProfile(s))) {
+				knownUsers.addUser(temp.getProfile(s));
+				updateProfileView(temp.getProfile(s));
+			}
+		}
 	}
 
 	private void updateProfileView(Profile match) {

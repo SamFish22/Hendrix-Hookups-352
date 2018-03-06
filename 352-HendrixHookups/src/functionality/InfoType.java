@@ -18,6 +18,10 @@ public enum InfoType {
 		public String getName() {
 			return "message";
 		}
+	}, UPDATE {
+		public String getName() {
+			return "update";
+		}
 	};
 
 	abstract public String getName();
