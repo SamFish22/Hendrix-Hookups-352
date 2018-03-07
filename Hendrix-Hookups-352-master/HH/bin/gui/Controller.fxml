@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane fx:id="holder" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
+  <tabs>
+    <Tab text="Homepage">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0" />
+                  <Label layoutX="14.0" prefHeight="87.0" prefWidth="271.0" text="My Profile">
+                     <font>
+                        <Font size="57.0" />
+                     </font>
+                  </Label>
+                  <TextArea fx:id="bio" layoutX="14.0" layoutY="127.0" prefHeight="161.0" prefWidth="553.0" promptText="Your bio here" />
+                  <Button fx:id="edit" layoutX="14.0" layoutY="288.0" mnemonicParsing="false" onAction="#pressEdit" text="Edit" />
+                  <TextField fx:id="name" layoutX="14.0" layoutY="84.0" prefHeight="43.0" prefWidth="303.0" promptText="Your name here" />
+                  <TextArea fx:id="localIp" layoutX="317.0" layoutY="84.0" prefHeight="43.0" prefWidth="251.0" promptText="Your IP" />
+                  <Label layoutX="182.0" layoutY="288.0" prefHeight="32.0" prefWidth="135.0" text="Relationship Status:" />
+                  <ChoiceBox fx:id="status" layoutX="317.0" layoutY="289.0" prefHeight="31.0" prefWidth="250.0" />
+               </children></AnchorPane>
+      </content>
+    </Tab>
+      <Tab fx:id="profileView" text="Profile viewer">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="14.0" layoutY="3.0" prefHeight="60.0" prefWidth="182.0" text="Who's Connected?">
+                     <font>
+                        <Font size="21.0" />
+                     </font>
+                  </Label>
+                  <Button layoutX="13.0" layoutY="308.0" mnemonicParsing="false" onAction="#pressChat" prefHeight="31.0" prefWidth="323.0" text="Chat">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="361.0" layoutY="53.0" prefHeight="48.0" prefWidth="132.0" text="No connections?">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="getConnections" layoutX="362.0" layoutY="111.0" mnemonicParsing="false" onAction="#pressGetConnections" text="Get Connections" />
+                  <TextField fx:id="IPaddress" layoutX="361.0" layoutY="165.0" prefHeight="31.0" prefWidth="149.0" promptText="Enter an IP address:" />
+                  <Button fx:id="go" layoutX="362.0" layoutY="196.0" mnemonicParsing="false" onAction="#sendKnownUsers" text="Go" />
+                  <Accordion fx:id="profilesFound" layoutX="13.0" layoutY="46.0" prefHeight="262.0" prefWidth="321.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Accordion>
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
+    <Tab fx:id="chatroom" text="Chatroom">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="70.0" layoutY="14.0" prefHeight="41.0" prefWidth="459.0" text="Chatting with:">
+                     <font>
+                        <Font size="23.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="chatText" layoutX="70.0" layoutY="251.0" prefHeight="31.0" prefWidth="405.0" />
+                  <Button layoutX="475.0" layoutY="251.0" mnemonicParsing="false" onAction="#sendMyMessage" text="Send" />
+                  <ListView fx:id="chatMessages" layoutX="71.0" layoutY="51.0" prefHeight="200.0" prefWidth="458.0" />
+               </children></AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>
