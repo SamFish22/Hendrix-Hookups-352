@@ -85,6 +85,10 @@ public class Controller { // add profile picture
 		knownUsers = new People();
 		associates = new People();
 		chatroom.setDisable(true);
+		ObservableList<String> options = FXCollections.observableArrayList("Single", "In a relationship",
+				"It's complicated", "Too blessed to be stressed", "To stressed to be blessed", "Thruple aspiring");
+		status.getItems().addAll(options);
+		send.setVisible(false);
 		try {
 			localIp.setText(InetAddress.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e1) {
@@ -100,9 +104,7 @@ public class Controller { // add profile picture
 			setLocalUser();
 			knownUsers.addUser(localUser);
 		}
-		ObservableList<String> options = FXCollections.observableArrayList("Single", "In a relationship",
-				"It's complicated", "Too blessed to be stressed", "To stressed to be blessed", "Thruple aspiring");
-		status.getItems().addAll(options);
+		
 
 		IPaddress.setVisible(false);
 		go.setVisible(false);
@@ -135,7 +137,7 @@ public class Controller { // add profile picture
 					name.setText(bufferedReader.readLine());
 					bufferedReader.readLine();
 					int i = parseStatus(bufferedReader.readLine());
-					status.getSelectionModel().selectFirst();
+					status.getSelectionModel().select(i);
 					bio.setText(bufferedReader.readLine());
 					bufferedReader.close();
 					// TODO open image
@@ -167,6 +169,7 @@ public class Controller { // add profile picture
 			setLocalUser();
 			disableFirstPage();
 			knownUsers.addUser(localUser);
+			updateAllPeople(new People(localUser).toString());
 
 		} else {
 			profileView.setDisable(false);
@@ -182,7 +185,8 @@ public class Controller { // add profile picture
 		localUser.setBio(bio.getText());
 		localUser.setIp(localIp.getText());
 		localUser.setName(name.getText());
-		localUser.setStat("Single");
+		System.out.println("setLocalUser: " + status.getValue());
+		localUser.setStat(status.getValue());
 		localUser.saveProfile(file);
 	}
 
@@ -213,6 +217,7 @@ public class Controller { // add profile picture
 			allChats.setChatter(c);
 			chattingView.setItems(allChats.getChatWith(name));
 		}
+		send.setVisible(true);
 	}
 
 	public void sendMyMessage() {
@@ -256,30 +261,31 @@ public class Controller { // add profile picture
 	}
 
 	private void newMessage(String info) {
-		String count;
-		String message;
-		String name;
+		Platform.runLater(() -> {
+			String count;
+			String message;
+			String name;
 
-		int indexer;
+			int indexer;
 
-		count = "";
-		message = "";
-		name = "";
+			count = "";
+			message = "";
+			name = "";
 
-		for (int i = 0; i < info.length(); i++) {
-			if (info.charAt(i) != ' ') {
-				count = count + info.charAt(i);
-			} else {
-				indexer = Integer.parseInt(count);
-				count = "";
-				name = info.substring(i + 1, i + 1 + indexer);
-				message = info.substring(i + 1 + indexer, info.length());
-				i = info.length();
+			for (int i = 0; i < info.length(); i++) {
+				if (info.charAt(i) != ' ') {
+					count = count + info.charAt(i);
+				} else {
+					indexer = Integer.parseInt(count);
+					count = "";
+					name = info.substring(i + 1, i + 1 + indexer);
+					message = info.substring(i + 1 + indexer, info.length());
+					i = info.length();
+				}
 			}
-		}
-
-		allChats.updateChat(name, message);
-		chattingView.setItems(allChats.getChatWith(name));
+			allChats.updateChat(name, message);
+			chattingView.setItems(allChats.getChatWith(name));
+		});
 	}
 
 	private void handleRequest(String info) {
@@ -292,9 +298,7 @@ public class Controller { // add profile picture
 						sendTo(temp.getSender().getIp(), localUser.toString(), InfoType.ACCEPT.ordinal());
 						associates.addUser(temp.getSender());
 						allChats.addChatter(temp.getSender().getName());
-						chatterChoiceBox.getItems().addAll(allChats.getChatList());
-						holder.getSelectionModel().select(chatroom);
-						chatroom.setDisable(false);
+						updateChatBox();
 					}
 				});
 			} catch (Exception e) {
@@ -306,36 +310,17 @@ public class Controller { // add profile picture
 
 	private void acceptRequest(String info) {
 		allChats.addChatter(new Profile(info).getName());
+		updateChatBox();
+	}
+
+	private void updateChatBox() {
+		chatterChoiceBox.getItems().clear();
 		chatterChoiceBox.getItems().addAll(allChats.getChatList());
 		holder.getSelectionModel().select(chatroom);
 		chatroom.setDisable(false);
-		// the other part of a miracle happens here
 	}
 
 	private void updateAllPeople(String info) {
-		/*
-		 * System.out.println("update all people " + info); People newUsers = new
-		 * People(); People temp = new People(info); for (String s : temp.getKeys()) {
-		 * //updateProfileView(temp.getProfile(s)); if
-		 * (!knownUsers.getKeys().contains(s) ||
-		 * !knownUsers.getProfile(s).equals(temp.getProfile(s))) { //sendTo(s, new
-		 * People(temp.getProfile(s)).toString(), InfoType.PEOPLE.ordinal());
-		 * newUsers.addUser(temp.getProfile(s)); for (String s1 : knownUsers.getKeys())
-		 * { sendTo(s1, new People(temp.getProfile(s)).toString(),
-		 * InfoType.PEOPLE.ordinal()); newUsers.addUser(temp.getProfile(s)); } } }
-		 *
-		 * People needToSend = new People(); for (String s1 : knownUsers.getKeys()) { if
-		 * (!temp.getKeys().contains(s1)) {
-		 * needToSend.addUser(knownUsers.getProfile(s1));
-		 * knownUsers.addUser(knownUsers.getProfile(s1)); } } sendTo(temp.getFirstIP(),
-		 * needToSend.toString(), InfoType.PEOPLE.ordinal());
-		 *
-		 * for (String s2 : newUsers.getKeys()) {
-		 * knownUsers.addUser(newUsers.getProfile(s2));
-		 * updateProfileView(newUsers.getProfile(s2)); }
-		 * System.out.println("updateallpeople knownUsers " + knownUsers.toString());
-		 */
-
 		People temp;
 
 		updateSelf(info);
@@ -421,6 +406,7 @@ public class Controller { // add profile picture
 
 	public void sendKnownUsers() {
 		sendTo(IPaddress.getText(), knownUsers.toString(), InfoType.PEOPLE.ordinal());
+		IPaddress.setText("");
 	}
 
 	private void sendTo(String host, String message, int ord) { // Dr. Ferrer sockDemo

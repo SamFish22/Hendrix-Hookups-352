@@ -64,7 +64,7 @@
       <content>
         <AnchorPane fx:id="chatWindow" minHeight="0.0" minWidth="0.0" prefHeight="264.0" prefWidth="539.0">
                <children>
-                  <Button layoutX="475.0" layoutY="316.0" mnemonicParsing="false" onAction="#sendMyMessage" text="Send" />
+                  <Button fx:id="send" layoutX="475.0" layoutY="316.0" mnemonicParsing="false" onAction="#sendMyMessage" text="Send" />
                   <TextField fx:id="chatText" layoutX="70.0" layoutY="316.0" prefHeight="31.0" prefWidth="405.0" />
                   <ListView fx:id="chattingView" layoutX="71.0" layoutY="94.0" prefHeight="220.0" prefWidth="459.0" />
                   <Label layoutX="18.0" layoutY="13.0" text="Chat With:">
