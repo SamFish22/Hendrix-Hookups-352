@@ -15,6 +15,7 @@ import java.net.UnknownHostException;
 import functionality.InfoType;
 import functionality.People;
 import functionality.Profile;
+import functionality.Request;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,15 +24,17 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.control.Alert.AlertType;
 
-public class Controller { //add profile picture
+public class Controller { // add profile picture
 	@FXML
 	Button edit, send, chat, go, getConnections;
 
@@ -42,10 +45,10 @@ public class Controller { //add profile picture
 	Tab homepage, profileView, chatroom;
 
 	@FXML
-	ListView<String> chatMessages, peopleConnected; //change peopleConnected
+	ListView<String> chatMessages, peopleConnected; // change peopleConnected
 
 	@FXML
-	TextArea bio, localIp; //inetaddress.getlocalhost.get
+	TextArea bio, localIp; // inetaddress.getlocalhost.get
 
 	@FXML
 	TabPane holder;
@@ -61,6 +64,7 @@ public class Controller { //add profile picture
 	static final int portNum = 8888;
 
 	People knownUsers;
+	People associates;
 
 	Profile localUser;
 
@@ -73,6 +77,7 @@ public class Controller { //add profile picture
 		file = new File(userHomeFolder, "HendrixHookups.txt");
 		localUser = new Profile();
 		knownUsers = new People();
+		associates = new People();
 		chatroom.setDisable(true);
 		try {
 			localIp.setText(InetAddress.getLocalHost().getHostAddress());
@@ -89,20 +94,18 @@ public class Controller { //add profile picture
 			setLocalUser();
 			knownUsers.addUser(localUser);
 		}
-		ObservableList<String> options =
-			    FXCollections.observableArrayList("Single", "In a relationship", "It's complicated",
-						"Too blessed to be stressed", "To stressed to be blessed", "Thruple aspiring");
+		ObservableList<String> options = FXCollections.observableArrayList("Single", "In a relationship",
+				"It's complicated", "Too blessed to be stressed", "To stressed to be blessed", "Thruple aspiring");
 		status.getItems().addAll(options);
 
 		IPaddress.setVisible(false);
 		go.setVisible(false);
 
-
 		try {
 			accepter = new ServerSocket(portNum);
 			listen();
 
-		} catch (IOException e){
+		} catch (IOException e) {
 
 			badNews(e.getMessage());
 			e.printStackTrace();
@@ -112,8 +115,10 @@ public class Controller { //add profile picture
 	private boolean isFirstTime() {
 		if (file.exists()) {
 			return false;
-		} return true;
+		}
+		return true;
 	}
+
 	public void loadFile(File file) {
 		try {
 			FileReader fileReader = new FileReader(file.getAbsolutePath());
@@ -124,24 +129,24 @@ public class Controller { //add profile picture
 					name.setText(bufferedReader.readLine());
 					bufferedReader.readLine();
 					int i = parseStatus(bufferedReader.readLine());
-					status.getSelectionModel().selectFirst();;
+					status.getSelectionModel().selectFirst();
 					bio.setText(bufferedReader.readLine());
 					bufferedReader.close();
-					//TODO open image
+					// TODO open image
 				} else {
-					//TODO
+					// TODO
 				}
 			} catch (IOException e) {
-				//TODO
+				// TODO
 			}
 		} catch (FileNotFoundException e) {
-			//TODO
+			// TODO
 		}
 	}
 
 	public int parseStatus(String loading) {
-		String[] choices = {"Single", "In a relationship", "It's complicated",
-				"Too blessed to be stressed", "To stressed to be blessed", "Thruple aspiring"};
+		String[] choices = { "Single", "In a relationship", "It's complicated", "Too blessed to be stressed",
+				"To stressed to be blessed", "Thruple aspiring" };
 		for (int i = 0; i < choices.length - 1; i++) {
 			if (loading.equals(choices[i])) {
 				return i;
@@ -188,7 +193,7 @@ public class Controller { //add profile picture
 	}
 
 	public void pressChat() {
-		//get selected person object
+		// get selected person object
 		holder.getSelectionModel().select(chatroom);
 		chatroom.setDisable(false);
 	}
@@ -200,7 +205,7 @@ public class Controller { //add profile picture
 		chatText.setText("");
 	}
 
-	void badNews(String what) { //Dr. Ferrer 352 sockDemo
+	void badNews(String what) { // Dr. Ferrer 352 sockDemo
 		Alert badNum = new Alert(AlertType.ERROR);
 		badNum.setContentText(what);
 		badNum.show();
@@ -220,52 +225,41 @@ public class Controller { //add profile picture
 		} else if (ord == InfoType.UPDATE.ordinal()) {
 			updateSelf(temp);
 		} else if (ord == InfoType.REQUEST.ordinal()) {
-			//todo
+			handleRequest(temp);
 		} else if (ord == InfoType.ACCEPT.ordinal()) {
-			//todo
+			acceptRequest(temp);
 		} else if (ord == InfoType.MESSAGE.ordinal()) {
-			//todo
+			// todo
 		} else {
 			badNews("Unrecognized InfoType attempted.");
 		}
 	}
 
-	private void updateAllPeople(String info) {
-		/*System.out.println("update all people " + info);
-		People newUsers = new People();
-		People temp = new People(info);
-		for (String s : temp.getKeys()) {
-			//updateProfileView(temp.getProfile(s));
-			if (!knownUsers.getKeys().contains(s) || !knownUsers.getProfile(s).equals(temp.getProfile(s))) {
-				//sendTo(s, new People(temp.getProfile(s)).toString(), InfoType.PEOPLE.ordinal());
-				newUsers.addUser(temp.getProfile(s));
-				for (String s1 : knownUsers.getKeys()) {
-					sendTo(s1, new People(temp.getProfile(s)).toString(), InfoType.PEOPLE.ordinal());
-					newUsers.addUser(temp.getProfile(s));
+	private void handleRequest(String info) {
+		new Thread(() -> {
+			try {
+				Request temp = new Request(info);
+				updateSelf(new People(temp.getSender()).toString());
+				if (temp.chatRequest()) {
+					sendTo(temp.getSender().getIp(), localUser.toString(), InfoType.ACCEPT.ordinal());
+					associates.addUser(temp.getSender());
+					// a miracle happens here
 				}
+			} catch (Exception e) {
+				Platform.runLater(() -> badNews(e.getMessage()));
+				e.printStackTrace();
 			}
-		}
+		}).start();
+	}
 
-		People needToSend = new People();
-		for (String s1 : knownUsers.getKeys()) {
-			if (!temp.getKeys().contains(s1)) {
-				needToSend.addUser(knownUsers.getProfile(s1));
-				knownUsers.addUser(knownUsers.getProfile(s1));
-			}
-		}
-		sendTo(temp.getFirstIP(), needToSend.toString(), InfoType.PEOPLE.ordinal());
+	private void acceptRequest(String info) {
+		associates.addUser(new Profile(info));
+		// the other part of a miracle happens here
+	}
 
-		for (String s2 : newUsers.getKeys()) {
-			knownUsers.addUser(newUsers.getProfile(s2));
-			updateProfileView(newUsers.getProfile(s2));
-		}
-		System.out.println("updateallpeople knownUsers " + knownUsers.toString());*/
-
-		People temp;
+	private void updateAllPeople(String info) {
 
 		updateSelf(info);
-
-		temp = new People(info);
 		for (String s1 : knownUsers.getKeys()) {
 			if (!s1.equals(localUser.getIp())) {
 				sendTo(s1, knownUsers.toString(), InfoType.UPDATE.ordinal());
@@ -278,19 +272,30 @@ public class Controller { //add profile picture
 		for (String s : temp.getKeys()) {
 			if (!knownUsers.getKeys().contains(s) || !knownUsers.getProfile(s).equals(temp.getProfile(s))) {
 				knownUsers.addUser(temp.getProfile(s));
-				updateProfileView(temp.getProfile(s));
 			}
 		}
+		updateProfileView();
 	}
 
-	private void updateProfileView(Profile match) {
+	private void updateProfileView() {
 		Platform.runLater(() -> {
-			TitledPane pane = new TitledPane();
-			pane.setText(match.getName());
-			pane.setContent(new TextField(match.getBio()));
-			profilesFound.getPanes().add(pane);
+			profilesFound.getPanes().clear();
+			for (String each : knownUsers.getKeys()) {
+				Profile match = knownUsers.getProfile(each);
+				if (!match.getIp().equals(localUser.getIp())) {
+					TitledPane pane = new TitledPane();
+					pane.setText(match.getName());
+					GridPane grid = new GridPane();
+					grid.addRow(0, new Label(match.getStat()));
+					TextArea theirBio = new TextArea(match.getBio());
+					theirBio.setEditable(false);
+					theirBio.setWrapText(true);
+					grid.addRow(1, theirBio);
+					pane.setContent(grid);
+					profilesFound.getPanes().add(pane);
+				}
+			}
 		});
-
 	}
 
 	private void listen() throws IOException {
@@ -308,21 +313,21 @@ public class Controller { //add profile picture
 		}).start();
 	}
 
-	private void newClient(Socket s) throws IOException { //Dr. Ferrer sockDemo
+	private void newClient(Socket s) throws IOException { // Dr. Ferrer sockDemo
 		new Thread(() -> {
 			try {
-				BufferedReader responses =
-	            		new BufferedReader(new InputStreamReader(s.getInputStream()));
-	            StringBuilder sb = new StringBuilder();
-	            while (!responses.ready()){}
-	            while (responses.ready()) {
-	                sb.append(responses.readLine());
-	            }
-	            System.out.println("double check");
-	            System.out.println("check " + sb.toString() + " Please in controller");
-	            //String string = sb.toString();
-	            dealWithInput(sb.toString().toString());
-	            s.close();
+				BufferedReader responses = new BufferedReader(new InputStreamReader(s.getInputStream()));
+				StringBuilder sb = new StringBuilder();
+				while (!responses.ready()) {
+				}
+				while (responses.ready()) {
+					sb.append(responses.readLine());
+				}
+				System.out.println("double check");
+				System.out.println("check " + sb.toString() + " Please in controller");
+				// String string = sb.toString();
+				dealWithInput(sb.toString().toString());
+				s.close();
 
 			} catch (Exception e) {
 				Platform.runLater(() -> badNews(e.getMessage()));
@@ -335,7 +340,8 @@ public class Controller { //add profile picture
 		sendTo(IPaddress.getText(), knownUsers.toString(), InfoType.PEOPLE.ordinal());
 	}
 
-	private void sendTo(String host, String message, int ord) { //Dr. Ferrer sockDemo
+	private void sendTo(String host, String message, int ord) { // Dr. Ferrer
+																// sockDemo
 		new Thread(() -> {
 			try {
 				Socket target = new Socket(host, portNum);
@@ -348,11 +354,12 @@ public class Controller { //add profile picture
 		}).start();
 	}
 
-	private void send(Socket target, String message) throws IOException { //Dr. Ferrer sockDemo
+	private void send(Socket target, String message) throws IOException { // Dr.
+																			// Ferrer
+																			// sockDemo
 		PrintWriter sockout = new PrintWriter(target.getOutputStream());
 		sockout.println(message);
 		sockout.flush();
 	}
-
 
 }

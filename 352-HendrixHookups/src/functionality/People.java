@@ -9,7 +9,7 @@ public class People {
 
 	public People() {
 		knownUsers = new HashMap<String, String>();
-		firstIP = null;
+		firstIP = "";
 	}
 
 	public People(Profile p) {
@@ -35,6 +35,9 @@ public class People {
 	}
 
 	public void addUser(Profile p) {
+		if (firstIP == null || firstIP.isEmpty()) {
+			firstIP = p.getIp();
+		}
 		knownUsers.put(p.getIp(), p.toString());
 	}
 
