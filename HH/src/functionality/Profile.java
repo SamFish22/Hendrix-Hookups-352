@@ -1,20 +1,10 @@
 package functionality;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 
 public class Profile {
@@ -45,7 +35,6 @@ public class Profile {
 			if (profile.charAt(i) != ' ') {
 				count = count + profile.charAt(i);
 			} else {
-				
 				indexer = Integer.parseInt(count);
 				count = "";
 				stats.add(profile.substring(i + 1, i + 1 + indexer));
@@ -143,12 +132,7 @@ public class Profile {
 
 	@Override
 	public boolean equals(Object p) {
-		if (p instanceof Profile) {
-			if (getIp().equals(((Profile) p).getIp())) {
-				return true;
-			}
-		}
-		return false;
+		return toString().equals(p.toString());
 	}
 
 	@Override

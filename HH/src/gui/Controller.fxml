@@ -62,16 +62,18 @@
       </Tab>
     <Tab fx:id="chatroom" text="Chatroom">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+        <AnchorPane fx:id="chatWindow" minHeight="0.0" minWidth="0.0" prefHeight="264.0" prefWidth="539.0">
                <children>
-                  <Label layoutX="70.0" layoutY="14.0" prefHeight="41.0" prefWidth="459.0" text="Chatting with:">
+                  <Button layoutX="475.0" layoutY="316.0" mnemonicParsing="false" onAction="#sendMyMessage" text="Send" />
+                  <TextField fx:id="chatText" layoutX="70.0" layoutY="316.0" prefHeight="31.0" prefWidth="405.0" />
+                  <ListView fx:id="chattingView" layoutX="71.0" layoutY="94.0" prefHeight="220.0" prefWidth="459.0" />
+                  <Label layoutX="18.0" layoutY="13.0" text="Chat With:">
                      <font>
                         <Font size="23.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="chatText" layoutX="70.0" layoutY="251.0" prefHeight="31.0" prefWidth="405.0" />
-                  <Button layoutX="475.0" layoutY="251.0" mnemonicParsing="false" onAction="#sendMyMessage" text="Send" />
-                  <ListView fx:id="chatMessages" layoutX="71.0" layoutY="51.0" prefHeight="200.0" prefWidth="458.0" />
+                  <ChoiceBox fx:id="chatterChoiceBox" layoutX="151.0" layoutY="15.0" prefWidth="150.0" />
+                  <Button fx:id="changeChat" layoutX="301.0" layoutY="15.0" mnemonicParsing="false" onAction="#pressChatExclaimationPoint" text="Chat!" />
                </children></AnchorPane>
       </content>
     </Tab>
