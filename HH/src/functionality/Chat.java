@@ -24,6 +24,7 @@ public class Chat {
 	public void addChatter(String name) {
 		ObservableList<String> c = FXCollections.observableArrayList();
 		activeChats.put(name, c);
+		System.out.println("!!!!!" + activeChats.keySet());
 	}
 	
 	public ObservableList<String> getChatWith(String name) {
@@ -31,7 +32,9 @@ public class Chat {
 	}
 
 	public void updateChat(String name, String message) {
+		System.out.println(name+ "?");
 		ObservableList<String> singleChat = activeChats.get(name);
+		System.out.println(singleChat);
 		singleChat.add(message);
 		activeChats.replace(name, singleChat);
 	}

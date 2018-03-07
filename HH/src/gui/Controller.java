@@ -221,7 +221,8 @@ public class Controller { // add profile picture
 		allChats.updateChat(currentChatter, text);
 		chattingView.setItems(allChats.getChatWith(currentChatter));
 		chatText.setText("");
-		sendTo(knownUsers.getIP(currentChatter), currentChatter.length() + " " + currentChatter + text, InfoType.MESSAGE.ordinal());
+		sendTo(knownUsers.getIP(currentChatter), localUser.getName().length() + " " + localUser.getName() + text,
+				InfoType.MESSAGE.ordinal());
 	}
 
 	void badNews(String what) { // Dr. Ferrer 352 sockDemo
@@ -261,9 +262,9 @@ public class Controller { // add profile picture
 
 		int indexer;
 
-		count   = "";
+		count = "";
 		message = "";
-		name    = "";
+		name = "";
 
 		for (int i = 0; i < info.length(); i++) {
 			if (info.charAt(i) != ' ') {
@@ -284,16 +285,18 @@ public class Controller { // add profile picture
 	private void handleRequest(String info) {
 		new Thread(() -> {
 			try {
-				Request temp = new Request(info);
-				updateSelf(new People(temp.getSender()).toString());
-				if (temp.chatRequest()) {
-					sendTo(temp.getSender().getIp(), localUser.toString(), InfoType.ACCEPT.ordinal());
-					associates.addUser(temp.getSender());
-					allChats.addChatter(temp.getSender().getName());
-					chatterChoiceBox.getItems().addAll(allChats.getChatList());
-					holder.getSelectionModel().select(chatroom);
-					chatroom.setDisable(false);
-				}
+				Platform.runLater(() -> {
+					Request temp = new Request(info);
+					updateSelf(new People(temp.getSender()).toString());
+					if (temp.chatRequest()) {
+						sendTo(temp.getSender().getIp(), localUser.toString(), InfoType.ACCEPT.ordinal());
+						associates.addUser(temp.getSender());
+						allChats.addChatter(temp.getSender().getName());
+						chatterChoiceBox.getItems().addAll(allChats.getChatList());
+						holder.getSelectionModel().select(chatroom);
+						chatroom.setDisable(false);
+					}
+				});
 			} catch (Exception e) {
 				Platform.runLater(() -> badNews(e.getMessage()));
 				e.printStackTrace();
@@ -302,7 +305,10 @@ public class Controller { // add profile picture
 	}
 
 	private void acceptRequest(String info) {
-		associates.addUser(new Profile(info));
+		allChats.addChatter(new Profile(info).getName());
+		chatterChoiceBox.getItems().addAll(allChats.getChatList());
+		holder.getSelectionModel().select(chatroom);
+		chatroom.setDisable(false);
 		// the other part of a miracle happens here
 	}
 
