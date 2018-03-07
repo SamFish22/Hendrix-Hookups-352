@@ -11,11 +11,13 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import functionality.Chat;
 import functionality.InfoType;
 import functionality.People;
 import functionality.Profile;
+import functionality.Request;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -58,18 +60,19 @@ public class Controller { // add profile picture
 	ChoiceBox<String> status, chatterChoiceBox;
 
 	@FXML
-	Accordion profilesFound; 
-	
+	Accordion profilesFound;
+
 	@FXML
 	AnchorPane chatWindow;
 
 	static final int portNum = 8888;
 
 	People knownUsers;
+	People associates;
 
 	Profile localUser;
-	
-	Chat allChats = new Chat(); 
+
+	Chat allChats = new Chat();
 
 	File file;
 
@@ -80,6 +83,7 @@ public class Controller { // add profile picture
 		file = new File(userHomeFolder, "HendrixHookups.txt");
 		localUser = new Profile();
 		knownUsers = new People();
+		associates = new People();
 		chatroom.setDisable(true);
 		try {
 			localIp.setText(InetAddress.getLocalHost().getHostAddress());
@@ -194,35 +198,30 @@ public class Controller { // add profile picture
 		go.setVisible(true);
 	}
 
-	public void pressChat() { //Add socket code! Jacob!
+	public void pressChat() {
 		if (profilesFound.getExpandedPane() != null) {
 			String name = profilesFound.getExpandedPane().getText();
-			//send request
-			//accept or decline
-			//if accept{
-			allChats.addChatter(name);
-			chatterChoiceBox.getItems().addAll(allChats.getChatList());
-			holder.getSelectionModel().select(chatroom);
-			chatroom.setDisable(false);
+			sendTo(knownUsers.getIP(name), new Request(localUser).toString(), InfoType.REQUEST.ordinal());
 		}
 	}
-	
-	public void pressChatExclaimationPoint() { 
+
+	public void pressChatExclaimationPoint() {
 		String name = chatterChoiceBox.getSelectionModel().getSelectedItem();
 		if (name != null) {
 			String ip = knownUsers.getIP(name);
 			Profile c = knownUsers.getProfile(ip);
-			allChats.setChatter(c); 
+			allChats.setChatter(c);
 			chattingView.setItems(allChats.getChatWith(name));
 		}
 	}
 
-	public void sendMyMessage() { //Add socket code! Jacob!
-		String text = "You: " + chatText.getText();
+	public void sendMyMessage() {
+		String text = localUser.getName() + ": " + chatText.getText();
 		String currentChatter = allChats.getCurrentChatter().getName();
 		allChats.updateChat(currentChatter, text);
 		chattingView.setItems(allChats.getChatWith(currentChatter));
 		chatText.setText("");
+		sendTo(knownUsers.getIP(currentChatter), currentChatter.length() + " " + currentChatter + text, InfoType.MESSAGE.ordinal());
 	}
 
 	void badNews(String what) { // Dr. Ferrer 352 sockDemo
@@ -245,14 +244,66 @@ public class Controller { // add profile picture
 		} else if (ord == InfoType.UPDATE.ordinal()) {
 			updateSelf(temp);
 		} else if (ord == InfoType.REQUEST.ordinal()) {
-			// todo
+			handleRequest(temp);
 		} else if (ord == InfoType.ACCEPT.ordinal()) {
-			// todo
+			acceptRequest(temp);
 		} else if (ord == InfoType.MESSAGE.ordinal()) {
-			// todo
+			newMessage(temp);
 		} else {
 			badNews("Unrecognized InfoType attempted.");
 		}
+	}
+
+	private void newMessage(String info) {
+		String count;
+		String message;
+		String name;
+
+		int indexer;
+
+		count   = "";
+		message = "";
+		name    = "";
+
+		for (int i = 0; i < info.length(); i++) {
+			if (info.charAt(i) != ' ') {
+				count = count + info.charAt(i);
+			} else {
+				indexer = Integer.parseInt(count);
+				count = "";
+				name = info.substring(i + 1, i + 1 + indexer);
+				message = info.substring(i + 1 + indexer, info.length());
+				i = info.length();
+			}
+		}
+
+		allChats.updateChat(name, message);
+		chattingView.setItems(allChats.getChatWith(name));
+	}
+
+	private void handleRequest(String info) {
+		new Thread(() -> {
+			try {
+				Request temp = new Request(info);
+				updateSelf(new People(temp.getSender()).toString());
+				if (temp.chatRequest()) {
+					sendTo(temp.getSender().getIp(), localUser.toString(), InfoType.ACCEPT.ordinal());
+					associates.addUser(temp.getSender());
+					allChats.addChatter(temp.getSender().getName());
+					chatterChoiceBox.getItems().addAll(allChats.getChatList());
+					holder.getSelectionModel().select(chatroom);
+					chatroom.setDisable(false);
+				}
+			} catch (Exception e) {
+				Platform.runLater(() -> badNews(e.getMessage()));
+				e.printStackTrace();
+			}
+		}).start();
+	}
+
+	private void acceptRequest(String info) {
+		associates.addUser(new Profile(info));
+		// the other part of a miracle happens here
 	}
 
 	private void updateAllPeople(String info) {
@@ -266,13 +317,13 @@ public class Controller { // add profile picture
 		 * newUsers.addUser(temp.getProfile(s)); for (String s1 : knownUsers.getKeys())
 		 * { sendTo(s1, new People(temp.getProfile(s)).toString(),
 		 * InfoType.PEOPLE.ordinal()); newUsers.addUser(temp.getProfile(s)); } } }
-		 * 
+		 *
 		 * People needToSend = new People(); for (String s1 : knownUsers.getKeys()) { if
 		 * (!temp.getKeys().contains(s1)) {
 		 * needToSend.addUser(knownUsers.getProfile(s1));
 		 * knownUsers.addUser(knownUsers.getProfile(s1)); } } sendTo(temp.getFirstIP(),
 		 * needToSend.toString(), InfoType.PEOPLE.ordinal());
-		 * 
+		 *
 		 * for (String s2 : newUsers.getKeys()) {
 		 * knownUsers.addUser(newUsers.getProfile(s2));
 		 * updateProfileView(newUsers.getProfile(s2)); }
